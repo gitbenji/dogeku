@@ -29,7 +29,7 @@ app.server.listen(port, function() {
 	console.log('Listening on port ' + port + '\n');
 });
 
-e.get('/api/upload', jsonParser, function(req,res) {
+e.post('/api/upload', jsonParser, function(req,res) {
 	console.log('got it, jonathan');
 	console.log(req.body);
 });
@@ -39,7 +39,7 @@ e.get('/api/upload', jsonParser, function(req,res) {
 var tagList = []; // array for final list of all tags to send to SnoopDog
 // callback function for clarafai API to handle the errors
 function commonResultHandler( err, res ) {
-	console.log('request handler!');
+	// console.log('request handler!');
 	if( err != null ) {
 		console.log(' there was an error!');
 		if( typeof err["status_code"] === "string" && err["status_code"] === "TIMEOUT") {
@@ -60,7 +60,7 @@ function commonResultHandler( err, res ) {
 		}
 	}
 	else {
-		console.log('else');
+		// console.log('else');
 		// if some images were successfully tagged and some encountered errors,
 		// the status_code PARTIAL_ERROR is returned. In this case, we inspect the
 		// status_code entry in each element of res["results"] to evaluate the individual
@@ -72,12 +72,12 @@ function commonResultHandler( err, res ) {
 		if( typeof res["status_code"] === "string" && 
 			( res["status_code"] === "OK" || res["status_code"] === "PARTIAL_ERROR" )) {
 
-			console.log('-- RESULTS --');
-			console.log(res.results);
+			// console.log('-- RESULTS --');
+			// console.log(res.results);
 			var tag = [];
 			// the request completed successfully
 			for(i = 0; i < res.results.length; i++) {
-				console.log('goo');
+				// console.log('goo');
 				if( res["results"][i]["status_code"] === "OK" ) {
 
 					// logs and ish
@@ -85,7 +85,7 @@ function commonResultHandler( err, res ) {
 					// 	' local_id: '+res.results[i].local_id + '\n' +
 					// 	' tags: '+res["results"][i].result["tag"]["classes"] )
 					tag = res["results"][i].result["tag"]["classes"]
-					console.log('HERE: ' + tag);
+					// console.log('HERE: ' + tag);
 
 					// testarr = ['tree', 'dog', 'curiosity', 'engineering', 'gold', 'fib'];
 
@@ -123,28 +123,33 @@ function commonResultHandler( err, res ) {
 	countSyllables(tagList);
 }
 
-function substituteStrings(terms) {
-	
+function substituteStrings(tags) {
+
 }
 
-
-function countSyllables(terms) {
+// term and syll
+function countSyllables(tags) {
 	var syllableList = [];
 	var syllableCount = 0;
+	// var term = new Object();
+	var terms = [];
 	// console.log(terms);
-	for (var i = 0; i < terms.length; i++) {
+	for (var i = 0; i < tags.length; i++) {
 		// console.log(terms[i]);
 		// console.log(syllable(terms[i]));
-		syllableCount = syllable(terms[i]);
+		syllableCount = syllable(tags[i]);
 		// console.log(syllableCount);
 		// console.log('foo');
 		syllableList.push(syllableCount);
 	}
 	console.log(syllableList);
+	for (var i = 0; i < tags.list; i++){
+		terms[i] = new Term(tags[i], syllableList[i]);
+	}
 	// makeHaiku(terms, syllableList);
 }
 
-
+function Term()
 
 // run through directory of files and pass them into clarafai to get tagged
 // which then gets saved in mongodb
@@ -158,14 +163,14 @@ function runThroughFiles(dir){
 	  if(err)
 	  	console.log('-- ERROR GETTING FILES WITH GLOB --');
 
-	  console.log(files);
+	  // console.log(files);
 
 	  // loop through filenames 	  
 	  for(var i = 0; i < files.length; i++){
 	  	var filepath = files[i];
 	  	var index = filepath.lastIndexOf('/');
 	  	var ourId = filepath.substring(index + 1);
-	  	console.log(ourId);
+	  	// console.log(ourId);
 		var testURL = 'http://5bbe1c9c.ngrok.io' + '/' + 'public/2Btagged/'+ ourId;
 
 		console.log(testURL);
@@ -179,5 +184,5 @@ function runThroughFiles(dir){
 
 // run through files and tag them and then store them
 var folderPath = './public/2Btagged';
-console.log(syllable('dog'));
+// console.log(syllable('dog'));
 runThroughFiles(folderPath);
