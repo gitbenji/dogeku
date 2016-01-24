@@ -11,13 +11,17 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.14.2",
+    "bootstrap": "^3.3.6",
     "clarifai": "^0.3.3",
+    "crypto": "0.0.3",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
+    "fs-extra": "^0.26.4",
     "glob": "^6.0.4",
     "mongodb": "^2.1.4",
     "mongoose": "^4.3.7",
     "prompt": "^0.2.14",
+    "socket.io": "^1.4.4",
     "syllable": "^0.1.4"
   }
 }
