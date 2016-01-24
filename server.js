@@ -222,15 +222,15 @@ function max34(tags) {
 	var tagList = [];
 	var count = 0;
 
-	tags.forSome(function(tag) {
+	tags.forEach(function(tag) {
 		console.log(syllable(tag));
 		if (syllable(tag) <= 3) {
 			count++;
 			console.log(count);
 			tagList.push(tag);
-			if(count === 4) {
+			if(count == 4) {
 				console.log(tagList);
-				substituteStrings(tagList);
+				// substituteStrings(tagList);
 				return false;
 			}
 		}
