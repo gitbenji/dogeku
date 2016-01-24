@@ -1,33 +1,20 @@
-var terms = 
-[
+// making haikus
+
+
+
+
+// run through files and tag them and then store them
+// var folderPath = './public/img';
+// // console.log(syllable('dog'));
+// runThroughFiles(folderPath);
+module.exports = function(terms) {
+	var syllables = 
 	{
-		term: "ocean",
-		syll: 2
-	},
-	{
-		term: "bernie",
-		syll: 2
-	},
-	{
-		term: "Shibes4life",
-		syll: 3
-	},
-	{
-		term: "tree",
-		syll: 1
+		1:['wow', 'much', 'so', 'no', 'such'],
+	 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
+	 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
 	}
-];
 
-
-
-function makeHaiku(terms){
-
-var syllables = 
-{
-	1:['wow', 'much', 'so', 'no', 'such'],
- 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
- 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
-}
 	var haiku = [];
 
 	for(var i = 0; i < 4; i++)
@@ -112,6 +99,8 @@ var syllables =
 		
 	}
 	console.log(haiku);
+
+	return haiku;
 }
 
 
@@ -161,8 +150,6 @@ function SumOf(arr)
 	return sum;
 }
 
-makeHaiku(terms);
-
 
 function getRandom(array)
 {
@@ -170,13 +157,4 @@ function getRandom(array)
 	
 	return array[rand];
 }
-
-
-
-
-
-
-
-
-
 
