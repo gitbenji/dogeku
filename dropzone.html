@@ -10,7 +10,27 @@
   <script src="dropzone.js"></script>
 </head>
 <body>
-<!-- HTML heavily inspired by http://blueimp.github.io/jQuery-File-Upload/ -->
-<form action=".." class="dropzone"></form>
+  <a data-toggle="modal" data-target="#uploader" class="icon" style="cursor:pointer"><img src="cloud.png"></a>
+  <div class="modal fade" id="uploader" tabindex="-1" role="dialog" aria-labelledby="updater" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+  <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">✕</button>
+  <i class="icon-credit-card icon-7x"></i>
+  <p class="no-margin">You can upload only 1 JPEG file at a time!</p>
+  </div>
+  <div class="modal-body">
+  <form action="" class="uploadform dropzone no-margin dz-clickable">
+  <div class="dz-default dz-message">
+  <span>Drop your Cover Picture here</span>
+  </div>
+  </form>
+  </div>
+  <div class="modal-footer">
+  <button type="button" class="btn btn-default attachtopost" data-dismiss="modal">Close</button>
+  </div>
+  </div>
+  </div>
+  </div>
 </body>
 </html>
