@@ -29,7 +29,8 @@ app.server.listen(port, function() {
 	console.log('Listening on port ' + port + '\n');
 });
 
-e.get('/api/album', jsonParser, function(req,res) {
+e.get('/api/upload', jsonParser, function(req,res) {
+	console.log('got it, jonathan');
 	console.log(req.body);
 });
 
@@ -37,7 +38,7 @@ e.get('/api/album', jsonParser, function(req,res) {
 
 var tagList = []; // array for final list of all tags to send to SnoopDog
 // callback function for clarafai API to handle the errors
-function commonResultHandler( err, res, length ) {
+function commonResultHandler( err, res ) {
 	console.log('request handler!');
 	if( err != null ) {
 		console.log(' there was an error!');
@@ -79,9 +80,6 @@ function commonResultHandler( err, res, length ) {
 				console.log('goo');
 				if( res["results"][i]["status_code"] === "OK" ) {
 
-					// store in database
-					// storeVideoInfo(filename, docid, tagArr);
-
 					// logs and ish
 					// console.log( 'docid: '+res.results[i].docid + '\n' +
 					// 	' local_id: '+res.results[i].local_id + '\n' +
@@ -89,9 +87,26 @@ function commonResultHandler( err, res, length ) {
 					tag = res["results"][i].result["tag"]["classes"]
 					console.log('HERE: ' + tag);
 
-					for (var i = 0; i < 4; i++){
-						tagList.push(tag[i]);
+					// testarr = ['tree', 'dog', 'curiosity', 'engineering', 'gold', 'fib'];
+
+					var count = 0;
+					for (var i = 0; i < tag.length; i++){
+						// console.log(tag[i]);
+						if (syllable(tag[i]) > 3){
+							continue;
+						}
+						else{
+							count++;
+							tagList.push(tag[i]);
+							if (count == 4){
+								break;
+							}
+						}
+
+						
+						//tagList.push(tag[i]);
 					}
+					
 				}
 				else {
 					console.log( 'docid='+res.results[i].docid +
@@ -104,24 +119,29 @@ function commonResultHandler( err, res, length ) {
 	}
 	// console.log(tag);
 	// console.log(tagList[0]);
-	// console.log(tagList);
+	console.log(tagList);
 	countSyllables(tagList);
+}
+
+function substituteStrings(terms) {
+	
 }
 
 
 function countSyllables(terms) {
 	var syllableList = [];
 	var syllableCount = 0;
-	console.log(terms);
+	// console.log(terms);
 	for (var i = 0; i < terms.length; i++) {
-		console.log(terms[i]);
-		console.log(syllable(terms[i]));
+		// console.log(terms[i]);
+		// console.log(syllable(terms[i]));
 		syllableCount = syllable(terms[i]);
-		console.log(syllableCount);
-		console.log('foo');
+		// console.log(syllableCount);
+		// console.log('foo');
 		syllableList.push(syllableCount);
 	}
 	console.log(syllableList);
+	// makeHaiku(terms, syllableList);
 }
 
 
