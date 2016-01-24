@@ -24,9 +24,9 @@ function makeHaiku(terms){
 
 var syllables = 
 {
-	1:['wow', 'much', 'so', 'no', 'such'],
- 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
- 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
+	1:['wow', 'much', 'so', 'no', 'such', 'how', 'wots', 'douge', 'sniff', 'amaze', 'want', 'shibe', 'cool'],
+ 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very', 'going', 'purrfect', 'again', 'future', 'freedum', 'opchunz', 'major'], 
+ 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla', 'potato', 'happiness', 'animal', 'chiptole']
 }
 	var haiku = [];
 
