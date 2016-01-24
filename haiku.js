@@ -8,6 +8,7 @@
 // // console.log(syllable('dog'));
 // runThroughFiles(folderPath);
 module.exports = function(terms) {
+	console.log('haiku executed');
 	var syllables = 
 	{
 		1:['wow', 'much', 'so', 'no', 'such'],

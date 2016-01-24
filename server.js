@@ -5,7 +5,6 @@ var Clarifai = require('./clarifai_node.js');
 var io = require('socket.io');
 var sockets = require('./sockets.js');
 
-var url = 'mongodb://localhost:27017/dogeku';
 var app = {};
 var port = 8000;
 

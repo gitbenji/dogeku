@@ -1,10 +1,11 @@
 // grabs tag from image
 
 var Clarifai = require('./clarifai_node.js');
-
+var MongoClient = require('mongodb').MongoClient;
 var syllable = require('syllable');
 var assert = require('assert');
 var Q = require('q');
+var url = 'mongodb://localhost:27017/dogeku';
 
 module.exports = function(imgUrl, fileName) {
 	var dfd = Q.defer();
@@ -12,13 +13,14 @@ module.exports = function(imgUrl, fileName) {
 	// scan image
 	runClarifai(imgUrl, fileName)
 	.then(function(tags) {
-		console.log(tags);
+		
 		// get good tags
 		tags = max34(tags);
-		console.log(tags);
+
 		// db matches
 		substituteStrings(tags)
 		.then(function(replacers) {
+			console.log('REPLACERS', replacers)
 
 			tags = subSub(replacers, tags);
 
@@ -78,8 +80,7 @@ function runClarifai(imgUrl, fileName) {
 
 			res.results.forEach(function(result) {
 				if(result.status_code === "OK" ) {
-
-					tags.concat(result.result.tag.classes);						
+					tags = result.result.tag.classes;						
 
 				} else {
 					console.log(
@@ -104,9 +105,7 @@ function max34(tags) {
 	tags.every(function(tag) {
 		if (syllable(tag) <= 3 && tag !== 'no person') {
 			tagList.push(tag);
-			console.log('foo');
 			if(tagList.length === 4) {
-				console.log(tagList);
 				return false;
 			}
 			return true;
@@ -121,6 +120,7 @@ function max34(tags) {
 //grab array of objects from replace.js ---> replacers[]
 //use replacers[0].toReplace for function
 function substituteStrings(tags) {
+	console.log('sub');
 	var dfd = Q.defer();
 	
 
@@ -136,12 +136,15 @@ function substituteStrings(tags) {
 
 		cursor.each(function(err, doc) {
 			if(err) {
+				console.log('err');
 				dfd.reject(err);
 				return false;
 			}
 			if(doc) {
+				console.log('doc');
 			 	replacers.push(doc);
 			} else {
+				console.log('else');
 				dfd.resolve(replacers);
 			}
 		});
