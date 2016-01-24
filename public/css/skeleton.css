@@ -41,6 +41,14 @@
   float: left;
   box-sizing: border-box; }
 
+
+@font-face {
+  font-family: 'Late-Regular';
+  src: url('Late-Regular.eot');
+  src: local('Late-Regular Regular'), local('Late-Regular Web'),
+         url('Late-Regular.otf') format('opentype');
+}
+
 /* For devices larger than 400px */
 @media (min-width: 400px) {
   .container {
@@ -124,8 +132,8 @@ body {
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
-  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #222; }
+  font-family: "Late-Regular", sans-serif;
+  color: #E2D9CB; }
 
 
 /* Typography
@@ -416,3 +424,13 @@ there.
 
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
+
+.screwYou{
+  title {
+    display: block !important;
+  }
+}
+
+.moveup {
+  width: 100% !important;
+}
