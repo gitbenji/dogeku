@@ -13,9 +13,10 @@ module.exports = function(imgUrl, fileName) {
 	runClarifai(imgUrl, fileName)
 	.then(function(tags) {
 		console.log(tags);
+
 		// get good tags
 		tags = max34(tags);
-		console.log(tags);
+
 		// db matches
 		substituteStrings(tags)
 		.then(function(replacers) {
@@ -79,6 +80,7 @@ function runClarifai(imgUrl, fileName) {
 			res.results.forEach(function(result) {
 				if(result.status_code === "OK" ) {
 
+					console.log(result.result.tag.classes);
 					tags.concat(result.result.tag.classes);						
 
 				} else {
@@ -90,6 +92,8 @@ function runClarifai(imgUrl, fileName) {
 					);
 				}
 			});
+
+			console.log(tags);
 
 			dfd.resolve(tags);
 		}	
@@ -104,9 +108,7 @@ function max34(tags) {
 	tags.every(function(tag) {
 		if (syllable(tag) <= 3 && tag !== 'no person') {
 			tagList.push(tag);
-			console.log('foo');
 			if(tagList.length === 4) {
-				console.log(tagList);
 				return false;
 			}
 			return true;
