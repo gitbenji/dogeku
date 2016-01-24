@@ -27,7 +27,7 @@
     function printHaiku(arr) {
         var newstr = "";
         for(var i = 0; i < arr.length; i++){
-            newstr = newstr + arr[i] + '\n';
+            newstr = newstr + arr[i] + '<br>';
         }
         var string = document.getElementById('haiku');
         string.innerHTML = newstr;

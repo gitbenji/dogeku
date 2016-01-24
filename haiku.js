@@ -11,9 +11,9 @@ module.exports = function(terms) {
 	console.log('haiku executed');
 	var syllables = 
 	{
-		1:['wow', 'much', 'so', 'no', 'such'],
-	 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
-	 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
+		1:['wow', 'much', 'so', 'no', 'such', 'nerds', 'doge', 'judge', 'earth'],
+	 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very', 'soilent', 'gorgis'], 
+	 	3:['engeneer', 'suchity', 'computir', 'schwamphackrs', 'muchity', 'uhmaezing']
 	}
 
 	var haiku = [];
