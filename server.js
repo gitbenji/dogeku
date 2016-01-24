@@ -1,27 +1,44 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var http = require('http');
-var port = 8000;
-var app = {};
-var dotenv = require('dotenv').load();
+var dotenv = require('dotenv');
 var glob = require('glob');
 var syllable = require('syllable');
-
-
-// set up clarafai client
 var Clarifai = require('./clarifai_node.js');
+
+var io = require('socket.io');
+var fs = require('fs-extra');
+var crypto = require('crypto');
+var path = require('path');
+
+var app = {};
+var port = 8000;
+
+
+dotenv.load();
+
+/**
+ * Setup Clarifi
+ */
 Clarifai.initAPI(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
 
+
+
+/**
+ * Setup Express
+ */
 var e = app.e = express();
 app.server = app.server = http.createServer(e);
-
-e.use('/public', express.static(__dirname + '/public'));
-//e.use(express.static(__dirname + '/public'));
-
-e.use(bodyParser.json()); //HELP this doesn't allow post to run
-e.use(bodyParser.urlencoded({ extended: true })); //HELP what is extension
+io = io(app.server);
 
 
+e.use(express.static(__dirname + '/public'));
+
+
+
+/**
+ * Routes
+ */
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 
@@ -30,11 +47,112 @@ app.server.listen(port, function() {
 	console.log('Listening on port ' + port + '\n');
 });
 
-e.post('/api/upload', jsonParser, function(req,res) {
-	console.log('got it, jonathan');
-	console.log(req.files);
-	res.send(200);
+
+
+
+/**
+ * Setup socket.io
+ */
+var hmac = crypto.createHmac('sha256', 'asdasd');
+io.on('connection', function(socket) {
+	socket.emit('testConnect', {
+		message: 'hello'
+	});
+
+	function genId() {
+		var currDate = (new Date()).valueOf().toString();
+		var random = Math.random().toString();
+		hmac.update(currDate + random);
+		return hmac.digest('hex');
+	}
+
+	function genPath(fileName) {
+		fs.ensureDirSync(__dirname + '/public/img/static');
+		return path.resolve(__dirname + '/public/img/static/'+fileName);
+	}
+
+	socket.on('imageUpload', function(data) {
+
+		// TODO check image size
+
+		// check image type
+		var typeSection = data.imageData.substring(0, 30);
+		var re = /^data:image\/((png)|(jpeg)|(gif));base64,/;
+		if(!typeSection.match(re)) {
+			// bad file
+			console.log('Bad', typeSection);
+			return;
+		}
+
+		var ext = '.' + typeSection.substring(11, typeSection.indexOf(';'));
+
+		var buffer = new Buffer(data.imageData.replace(re, ''), 'base64');
+		console.log('uploading...');
+
+		// TODO grab extention from buffer
+		var fileName = genId() + ext;
+		var imgPath = genPath(fileName);
+
+		fs.writeFile(imgPath, buffer, function(err) {
+			if(err) {
+				console.log(err);
+				return;
+			}
+
+			// image has been saved to server
+
+			socket.emit('imageSaved', {
+				url: '/img/static/' + fileName
+			});
+			console.log('upload complete', fileName);
+		});
+	});
+
+
+	// socket.on('imageUpload', function (msg) {
+	// 	var base64Data = decodeBase64Image(msg.imageData);
+	// 	// if directory is not already created, then create it, otherwise overwrite existing image
+	// 	fs.exists(__dirname + "/" + msg.imageMetaData, function (exists) {
+	// 	    if (!exists) {
+	// 	        fs.mkdir(__dirname + "/" + msg.imageMetaData, function (e) {
+	// 	            if (!e) {
+	// 	                console.log("Created new directory without errors." + client.id);
+	// 	            } else {
+	// 	                console.log("Exception while creating new directory....");
+	// 	                throw e;
+	// 	            }
+	// 	        });
+	// 	    }
+	// 	});
+	//
+	// 	// write/save the image
+	// 	// TODO: extract file's extension instead of hard coding it
+	// 	fs.writeFile(__dirname + "/" + msg.imageMetaData + "/" + msg.imageMetaData + ".png", base64Data.data, function (err) {
+	// 	    if (err) {
+	// 	        console.log('ERROR:: ' + err);
+	// 	        throw err;
+	// 	    }
+	// 	});
+	// 	// I'm sending image back to client just to see and a way of confirmation. You can send whatever.
+	// 	client.emit('user image', msg.imageData);
+	// });
+
+	function decodeBase64Image(dataString) {
+        var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+            response = {};
+        if (matches.length !== 3) {
+            return new Error('Invalid input string');
+        }
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
+        return response;
+    }
+
 });
+
+
+
+
 
 
 
@@ -42,23 +160,23 @@ var tagList = []; // array for final list of all tags to send to SnoopDog
 // callback function for clarafai API to handle the errors
 function commonResultHandler( err, res ) {
 	// console.log('request handler!');
-	if( err != null ) {
+	if(err !== null) {
 		console.log(' there was an error!');
-		if( typeof err["status_code"] === "string" && err["status_code"] === "TIMEOUT") {
+		if( typeof err.status_code === "string" && err.status_code === "TIMEOUT") {
 			console.log("TAG request timed out");
 		}
-		else if( typeof err["status_code"] === "string" && err["status_code"] === "ALL_ERROR") {
-			console.log("TAG request received ALL_ERROR. Contact Clarifai support if it continues.");				
+		else if( typeof err.status_code === "string" && err.status_code === "ALL_ERROR") {
+			console.log("TAG request received ALL_ERROR. Contact Clarifai support if it continues.");
 		}
-		else if( typeof err["status_code"] === "string" && err["status_code"] === "TOKEN_FAILURE") {
-			console.log("TAG request received TOKEN_FAILURE. Contact Clarifai support if it continues.");				
+		else if( typeof err.status_code === "string" && err.status_code === "TOKEN_FAILURE") {
+			console.log("TAG request received TOKEN_FAILURE. Contact Clarifai support if it continues.");
 		}
-		else if( typeof err["status_code"] === "string" && err["status_code"] === "ERROR_THROTTLED") {
-			console.log("Clarifai host is throttling this application.");				
+		else if( typeof err.status_code === "string" && err.status_code === "ERROR_THROTTLED") {
+			console.log("Clarifai host is throttling this application.");
 		}
 		else {
 			console.log("TAG request encountered an unexpected error: ");
-			console.log(err);				
+			console.log(err);
 		}
 	}
 	else {
@@ -66,58 +184,47 @@ function commonResultHandler( err, res ) {
 		// if some images were successfully tagged and some encountered errors,
 		// the status_code PARTIAL_ERROR is returned. In this case, we inspect the
 		// status_code entry in each element of res["results"] to evaluate the individual
-		// successes and errors. if res["status_code"] === "OK" then all images were 
+		// successes and errors. if res.status_code === "OK" then all images were
 		// successfully tagged.
 
 
 		// This is where it's successful, or partially successful
-		if( typeof res["status_code"] === "string" && 
-			( res["status_code"] === "OK" || res["status_code"] === "PARTIAL_ERROR" )) {
+		if( typeof res.status_code === "string" &&
+			( res.status_code === "OK" || res.status_code === "PARTIAL_ERROR" )) {
 
-			// console.log('-- RESULTS --');
-			// console.log(res.results);
-			var tag = [];
-			// the request completed successfully
-			for(i = 0; i < res.results.length; i++) {
-				// console.log('goo');
-				if( res["results"][i]["status_code"] === "OK" ) {
 
-					// logs and ish
-					// console.log( 'docid: '+res.results[i].docid + '\n' +
-					// 	' local_id: '+res.results[i].local_id + '\n' +
-					// 	' tags: '+res["results"][i].result["tag"]["classes"] )
-					tag = res["results"][i].result["tag"]["classes"]
-					// console.log('HERE: ' + tag);
+			var tags = [];
 
-					// testarr = ['tree', 'dog', 'curiosity', 'engineering', 'gold', 'fib'];
+			res.results.forEach(function(result) {
+				if(res.results[i].status_code === "OK" ) {
+
+					tags = res.results[i].result.tag.classes;
+
 
 					var count = 0;
-					for (var i = 0; i < tag.length; i++){
-						// console.log(tag[i]);
-						if (syllable(tag[i]) > 3){
-							continue;
-						}
-						else{
+
+					tags.forEach(function(tag) {
+						if (syllable(tag) <= 3) {
 							count++;
-							tagList.push(tag[i]);
-							if (count == 4){
-								break;
+							tagList.push(tag);
+							if(count == 4){
+								return false;
 							}
 						}
 
-						
-						//tagList.push(tag[i]);
-					}
-					
+					});
+
+				} else {
+					console.log(
+						'docid=' + res.result.docid,
+						'local_id=' + res.result.local_id,
+						'status_code=' + res.result.status_code,
+						'error = ' + res.result.result.error
+					);
 				}
-				else {
-					console.log( 'docid='+res.results[i].docid +
-						' local_id='+res.results[i].local_id + 
-						' status_code='+res.results[i].status_code +
-						' error = '+res.results[i]["result"]["error"] )
-				}
-			}
-		}		
+			});
+
+		}
 	}
 	// console.log(tag);
 	// console.log(tagList[0]);
@@ -135,8 +242,10 @@ function countSyllables(tags) {
 	var syllableCount = 0;
 	// var term = new Object();
 	var terms = [];
+	var i;
+
 	// console.log(terms);
-	for (var i = 0; i < tags.length; i++) {
+	for (i = 0; i < tags.length; i++) {
 		// console.log(terms[i]);
 		// console.log(syllable(terms[i]));
 		syllableCount = syllable(tags[i]);
@@ -145,7 +254,8 @@ function countSyllables(tags) {
 		syllableList.push(syllableCount);
 	}
 	console.log(syllableList);
-	for (var i = 0; i < tags.list; i++){
+
+	for (i = 0; i < tags.list; i++){
 		terms[i] = new Term(tags[i], syllableList[i]);
 	}
 	// makeHaiku(terms, syllableList);
@@ -167,7 +277,7 @@ function runThroughFiles(dir){
 
 	  // console.log(files);
 
-	  // loop through filenames 	  
+	  // loop through filenames
 	  for(var i = 0; i < files.length; i++){
 	  	var filepath = files[i];
 	  	var index = filepath.lastIndexOf('/');
@@ -179,7 +289,7 @@ function runThroughFiles(dir){
 
 		// make call to clarafai to get the tags for that certain video
 		Clarifai.tagURL(testURL , ourId, commonResultHandler);
-	  } 
+	  }
 	});
 }
 
