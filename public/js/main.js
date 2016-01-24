@@ -20,9 +20,18 @@
     });
 
     socket.on('haiku', function(data) {
-        console.log(data);
+        printHaiku(data.message);
         console.log('woot');
     });
+
+    function printHaiku(arr) {
+        var newstr = "";
+        for(var i = 0; i < arr.length; i++){
+            newstr = newstr + arr[i] + '\n';
+        }
+        var string = document.getElementById('haiku');
+        string.innerHTML = newstr;
+    }
 
     // socket.on('testConnect', function(data) {
     //     console.log('test connect:', data);

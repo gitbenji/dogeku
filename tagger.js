@@ -20,7 +20,7 @@ module.exports = function(imgUrl, fileName) {
 		// db matches
 		substituteStrings(tags)
 		.then(function(replacers) {
-			console.log('REPLACERS', replacers)
+			// console.log('REPLACERS', replacers)
 
 			tags = subSub(replacers, tags);
 
@@ -141,10 +141,10 @@ function substituteStrings(tags) {
 				return false;
 			}
 			if(doc) {
-				console.log('doc');
+				// console.log('doc');
 			 	replacers.push(doc);
 			} else {
-				console.log('else');
+				// console.log('else');
 				dfd.resolve(replacers);
 			}
 		});

@@ -7,11 +7,12 @@ var path = require('path');
 var haiku = require('./haiku');
 var tagger = require('./tagger');
 
-var hmac = crypto.createHmac('sha256', 'asdasd');
+
 
 function genId() {
 	var currDate = (new Date()).valueOf().toString();
 	var random = Math.random().toString();
+	var hmac = crypto.createHmac('sha256', 'asdasd');
 	hmac.update(currDate + random);
 	return hmac.digest('hex');
 }
