@@ -19,6 +19,11 @@
         result.append('<img src="'+data.url+'">');
     });
 
+    socket.on('haiku', function(data) {
+        console.log(data);
+        console.log('woot');
+    });
+
     // socket.on('testConnect', function(data) {
     //     console.log('test connect:', data);
     // });

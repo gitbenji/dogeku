@@ -1,109 +1,160 @@
+// making haikus
 
-function makeHaiku(term, syll);
 
-Math.floor((Math.random())
-var z = Math.random();
-var line1, line2, line3;
 
-//first line
 
-if (syll[1] == 1 && z = 0){
-	line1 = 1syll + term[i] + 3syll;
-}
-else if (syll[1] == 1 && z == 1){
-	line1 = 2syll + 2syll + term[i];
-}
+// run through files and tag them and then store them
+// var folderPath = './public/img';
+// // console.log(syllable('dog'));
+// runThroughFiles(folderPath);
+module.exports = function(terms) {
+	var syllables = 
+	{
+		1:['wow', 'much', 'so', 'no', 'such'],
+	 	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
+	 	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
+	}
 
-else if (syll[1] == 2 && z == 0){
-	line1 = 1syll + 1syll + term[i];
-}
+	var haiku = [];
 
-else if (syll[1] == 2 && z == 1){
-	line1 = 1syll + term[i] + 1syll;
+	for(var i = 0; i < 4; i++)
+	{
+		
+		var nums;
+		
+		if(i == 1)
+		{ //7 syll line
+			nums = getSequence(7, terms[i].syll, terms[i + 1].syll);
+			i++;
+		}
+		
+		else
+		{
+			nums = getSequence(5, terms[i].syll);
+		}
 
-}
-else if (syll[1] == 3 && z == 0){
-	line1 = 1syll + 1syll + term[i];
-}
-else if (syll[1] == 3&& z == 1){
-	line1 = 2syll + term[i];
-}
 
-//second line first word
+		var used1 = false;
+		var used2 = false;
+		var currentLine = "";
+		var sum = SumOf(nums);
 
-if (syll[2] == 1 && z == 0){
-	line2word1 = 2syll + term[i];
-}
+		for(var j = 0; j < nums.length; j++)
+		{
+			
+			if(sum == 7)
+			{
+				if(nums[j] == terms[i].syll && !used1){
+					currentLine += terms[i].term + " ";
+					used1 = true;
+					// insert i syll
+					// set used1 to true
+				}
 
-else if (syll[2] == 1 && z == 1){
-	line2word1 = 3syll + term[i];
-}
+				else if(nums[j] == terms[i + 1].syll && !used2)
+				{
+					currentLine += terms[i + 1].term + " ";
+					used2 = true;
+					// insert i + 1 syll
+					// set used2 to true
+				}
+				
+				else
+				{
+					var randomWord = getRandom(syllables[nums[j]]);
+					currentLine += randomWord + " ";
+				}
 
-else if (syll[2] == 2 && z == 0){
-	line2word1 = 1syll + 1syll + term[i];
-}
+				// console.log(currentLine + '/n');
+				// check both syllables
+				// have two flags
+			} 
 
-else if (syll[2] == 2 && z == 1){
-	line2word1 = 1syll + 1syll + term[i];
-}
+			else 
+			{
+				
+				if(nums[j] == terms[i].syll && !used1)
+				{
+					currentLine += terms[i].term + " ";
+					used1 = true;
 
-else if (syll[2] == 3 && z == 0){
-	line2word1 = 2syll + term[i];
-} 
-else if (syll[2] == 3 && z == 1){
-	line2word1 = 2syll + term[i];
-}
+					
+				}
+				
+				else
+				{
+					var randomWord = getRandom(syllables[nums[j]]);
+					currentLine += randomWord + " ";
+				}
 
-//second line second word
+				 
+				 // console.log(currentLine + '\n');
 
-if (syll[3] == 1 && z == 0){
-	line2word2 = 2syll + term[i] + 1syll;
-}
-else if (syll[3] == 1 && z == 1){
-	line2word2 = 2syll + term[i];
-}
+				// check first syllable
+				// have one flag
+			}
 
-else if (syll[3] == 2 && z == 0){
-	line2word2 = 1syll + term[i];
-}
+		} 
+		haiku.push(currentLine);
+		
+	}
+	console.log(haiku);
 
-else if (syll[3] == 2 && z == 1){
-	line2word2 = term[i] + 1syll;
-}
-
-else if (syll[3] == 3 && z == 0){
-	line2word2 = 2syll + term[i] + 1syll;
-}
-
-else if (syll[3] == 3 && z == 1){
-	line2word2 = 1syll + 1syll + term[i] + 1syll;
-}
-
-//third line
-
-if (syll[4] == 1 && z == 0){
-	line3 = 2syll + term[i] + 2syll;
-}
-
-else if (syll[4] == 1 && z == 1){
-	line3 = 3syll + 1syll +term[i];
-}
-
-else if (syll[4] == 2 && z == 0){
-	line3 = 2syll + term[i] + 1syll;
-}
-
-else if (syll[4] == 2 && z == 1){
-	line3 = 1syll + term[i] + 2syll;
-}
-
-else if (syll[4] == 3 && z == 0){
-	line3 = 1syll + term[i] + 1syll;
-}
-
-else if (syll[4] == 3 && z == 1){
-	line3 = term[i] + 1syll + 1syll;
+	return haiku;
 }
 
 
+function getSequence(max, syll, syll2)
+{
+	
+	var sequence;
+	
+	do
+	{
+		var sum = 0;
+		sequence = [];
+		
+		while(sum < max)
+		{
+			var rand = Math.floor((Math.random() * 3) + 1);
+			sum = SumOf(sequence);
+			var potentialNew = sum + rand;
+			if(potentialNew <= max)
+				sequence.push(rand);
+			sum = SumOf(sequence);
+		}
+
+		var test1 = (sequence.indexOf(syll) >= 0);
+		var test2 = true;
+
+		if(max == 7)
+			test2 = (sequence.indexOf(syll2) >= 0);
+
+		var overallTest = test1 && test2;
+
+	}while(!overallTest);
+
+
+	return sequence;
+}
+
+function SumOf(arr)
+{
+	var sum = 0;
+
+	for(var i = 0; i < arr.length; i++)
+	{
+    	sum += arr[i]; //don't forget to add the base
+	}
+
+	return sum;
+}
+
+
+function getRandom(array)
+{
+	var rand = Math.floor(Math.random()* array.length);
+	
+	return array[rand];
+}
 

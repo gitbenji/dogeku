@@ -18,16 +18,16 @@ var terms =
 	}
 ];
 
+
+
+function makeHaiku(terms){
+
 var syllables = 
 {
 	1:['wow', 'much', 'so', 'no', 'such'],
  	2:['many', 'being', 'beauti', 'indee', 'pracious', 'very'], 
  	3:['engeneer', 'michgan', 'computir', 'ohagan', 'chinchilla']
- }
-
-
-function makeHaiku(terms){
-
+}
 	var haiku = [];
 
 	for(var i = 0; i < 4; i++)
