@@ -59,7 +59,7 @@
 $(document).ready(function(){
 Dropzone.autoDiscover = false; // keep this line if you have multiple dropzones in the same page
 	$(".uploadform").dropzone({
-	// acceptedFiles: "image/jpeg",
+	  acceptedFiles: "image/jpeg",
     url: 'http://5bbe1c9c.ngrok.io/api/upload',
     maxFiles: 1, // Number of files at a time
 	maxFilesize: 1, //in MB
@@ -67,6 +67,7 @@ Dropzone.autoDiscover = false; // keep this line if you have multiple dropzones 
         alert('You have uploaded more than 1 Image. Only the first file will be uploaded!');
     },
 	success: function (response) {
+    // console.log('fuck yes');
 		var x = JSON.parse(response.xhr.responseText);
 		$('.icon').hide();
 		$('#uploader').modal('hide');
@@ -90,14 +91,6 @@ Dropzone.autoDiscover = false; // keep this line if you have multiple dropzones 
 <footer>
             <a  href="http://www.jqueryajaxphp.com/upload-resize-image-using-dropzone-js-php">Tutorial: Upload and Resize image using Dropzone.js, jQuery, Ajax and PHP </a>
 </footer>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-46486866-1', 'jqueryajaxphp.com');
-  ga('send', 'pageview');
-</script>
 </body>
 </html>

@@ -7,6 +7,7 @@ var dotenv = require('dotenv').load();
 var glob = require('glob');
 var syllable = require('syllable');
 
+
 // set up clarafai client
 var Clarifai = require('./clarifai_node.js');
 Clarifai.initAPI(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
@@ -31,7 +32,8 @@ app.server.listen(port, function() {
 
 e.post('/api/upload', jsonParser, function(req,res) {
 	console.log('got it, jonathan');
-	console.log(req.body);
+	console.log(req.files);
+	res.send(200);
 });
 
 
@@ -149,7 +151,7 @@ function countSyllables(tags) {
 	// makeHaiku(terms, syllableList);
 }
 
-function Term()
+//function Term()
 
 // run through directory of files and pass them into clarafai to get tagged
 // which then gets saved in mongodb
