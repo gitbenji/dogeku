@@ -6,6 +6,9 @@ var app = {};
 var dotenv = require('dotenv').load();
 var glob = require('glob');
 var syllable = require('syllable');
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var url = 'mongodb://localhost:27017/dogeku';
 
 
 // set up clarafai client
@@ -35,7 +38,6 @@ e.post('/api/upload', jsonParser, function(req,res) {
 	console.log(req.files);
 	res.send(200);
 });
-
 
 
 var tagList = []; // array for final list of all tags to send to SnoopDog
@@ -123,11 +125,66 @@ function commonResultHandler( err, res ) {
 	// console.log(tagList[0]);
 	console.log(tagList);
 	countSyllables(tagList);
+	substituteStrings(tagList);
 }
 
+
+//grab array of objects from replace.js ---> replacers[]
+//use replacers[0].toReplace for function
 function substituteStrings(tags) {
+	var replacers = [];
+	MongoClient.connect(url, function(err, db) {
+		console.log('connected');
+		assert.equal(null, err);
 
+		var cursor = db.collection('replacers').find( );
+		cursor.each(function(err, doc) {
+			// console.log('foo');
+			// assert.equal(err, null);
+			if (doc != null) {
+				// console.log('goo');
+			 	replacers.push(doc);
+			 	console.log(doc);
+			} else {
+				// console.log('wut');
+			 	subSub(replacers, tags);
+			}
+		});
+	});
 }
+
+function subSub(replacers, tags) {
+	console.log(replacers);
+	console.log(tags);
+	var replacedTags = [];
+	var count = 0;
+
+
+	tags.forEach(function(tag) {  							//should only run 4 times
+		for (var j = 0; j < replacers.length; j++) {					//run through all replacement options
+			console.log(tag);
+			if (tag.includes(replacers[j].toReplace) == true) {		//check sameness
+				// console.log('true');
+				var newstr = tag.replace(replacers[j].regExp, replacers[j].replaceWith);	//replace
+				// console.log(newstr);
+				replacedTags.push(newstr);
+				return false;
+			}
+			else {
+				//console.log('false');
+				count++;
+				if (count == replacers.length){
+					count = 0;
+					replacedTags.push(tag);
+				}
+			}
+		}
+	});
+
+	console.log(replacedTags);
+	// db.close();
+}
+
 
 // term and syll
 function countSyllables(tags) {
@@ -141,17 +198,25 @@ function countSyllables(tags) {
 		// console.log(syllable(terms[i]));
 		syllableCount = syllable(tags[i]);
 		// console.log(syllableCount);
-		// console.log('foo');
 		syllableList.push(syllableCount);
 	}
-	console.log(syllableList);
-	for (var i = 0; i < tags.list; i++){
+	// console.log(syllableList);
+	for (var i = 0; i < tags.length; i++){
+		// console.log(i);
 		terms[i] = new Term(tags[i], syllableList[i]);
+		// console.log(terms[i]);
 	}
+	// console.log(terms);
+	// console.log(terms[0].term);
+	// console.log(terms[0].syll);
 	// makeHaiku(terms, syllableList);
 }
 
-//function Term()
+function Term(tag, syllable) {
+	// console.log('here');
+	this.term = tag;
+	this.syll = syllable;
+}
 
 // run through directory of files and pass them into clarafai to get tagged
 // which then gets saved in mongodb
